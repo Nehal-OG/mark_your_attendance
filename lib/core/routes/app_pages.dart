@@ -12,6 +12,8 @@ import 'package:mark_your_attendance/features/auth/presentation/bindings/passwor
 import 'package:mark_your_attendance/features/auth/presentation/views/password_reset_view.dart';
 import 'package:mark_your_attendance/features/home/presentation/bindings/home_binding.dart';
 import 'package:mark_your_attendance/features/home/presentation/views/home_view.dart';
+import 'package:mark_your_attendance/features/calendar/presentation/bindings/calendar_binding.dart';
+import 'package:mark_your_attendance/features/calendar/presentation/views/calendar_view.dart';
 
 class AppPages {
   static final routes = [
@@ -44,6 +46,11 @@ class AppPages {
       name: AppRoutes.MAIN,
       page: () => const MainNavigation(),
       binding: NavigationBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.CALENDAR,
+      page: () => const CalendarView(),
+      binding: CalendarBinding(),
     ),
     // Add other routes here
   ];
