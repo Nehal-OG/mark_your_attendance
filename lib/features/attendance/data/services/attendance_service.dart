@@ -33,7 +33,7 @@ class AttendanceService {
     if (user == null) throw 'User not authenticated';
 
     // Get current location
-    final position = await _getCurrentPosition();
+    final position = await getCurrentPosition();
     
     final attendance = AttendanceModel(
       userId: user.uid,
@@ -54,7 +54,7 @@ class AttendanceService {
     if (todayAttendance == null) throw 'No check-in record found for today';
 
     // Get current location
-    final position = await _getCurrentPosition();
+    final position = await getCurrentPosition();
 
     await _firestore
         .collection('attendance')
@@ -73,7 +73,7 @@ class AttendanceService {
   }
 
   // Get current position
-  Future<Position> _getCurrentPosition() async {
+  Future<Position> getCurrentPosition() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       throw 'Location services are disabled';

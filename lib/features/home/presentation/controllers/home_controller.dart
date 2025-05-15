@@ -65,7 +65,7 @@ class HomeController extends GetxController {
 
   Future<void> _getCurrentLocation() async {
     try {
-      final position = await _attendanceService._getCurrentPosition();
+      final position = await _attendanceService.getCurrentPosition();
       _currentPosition.value = position;
     } catch (e) {
       _errorMessage.value = e.toString();

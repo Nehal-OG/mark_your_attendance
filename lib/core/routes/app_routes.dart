@@ -1,11 +1,17 @@
 abstract class AppRoutes {
+  // Auth Routes
   static const SPLASH = '/splash';
   static const LOGIN = '/login';
   static const REGISTER = '/register';
   static const FORGOT_PASSWORD = '/forgot-password';
-  static const HOME = '/home';
+  
+  // Main Navigation Routes
   static const MAIN = '/main';
-  static const ATTENDANCE = '/attendance';
+  static const HOME = '/home';
   static const CALENDAR = '/calendar';
-  static const PROFILE = '/profile';
+  static const MORE = '/more';
+  
+  // Sub Routes
+  static const MY_ATTENDANCE = '/my-attendance';
+  static const CHANGE_PASSWORD = '/change-password';
 } 
