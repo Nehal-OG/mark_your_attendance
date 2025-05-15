@@ -14,6 +14,8 @@ import 'package:mark_your_attendance/features/home/presentation/bindings/home_bi
 import 'package:mark_your_attendance/features/home/presentation/views/home_view.dart';
 import 'package:mark_your_attendance/features/calendar/presentation/bindings/calendar_binding.dart';
 import 'package:mark_your_attendance/features/calendar/presentation/views/calendar_view.dart';
+import 'package:mark_your_attendance/features/more/presentation/bindings/more_binding.dart';
+import 'package:mark_your_attendance/features/more/presentation/views/more_view.dart';
 
 class AppPages {
   static final routes = [
@@ -51,6 +53,11 @@ class AppPages {
       name: AppRoutes.CALENDAR,
       page: () => const CalendarView(),
       binding: CalendarBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.MORE,
+      page: () => const MoreView(),
+      binding: MoreBinding(),
     ),
     // Add other routes here
   ];
