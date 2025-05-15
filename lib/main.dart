@@ -4,10 +4,13 @@ import 'package:get/get.dart';
 import 'package:mark_your_attendance/core/bindings/initial_binding.dart';
 import 'package:mark_your_attendance/core/routes/app_pages.dart';
 import 'package:mark_your_attendance/core/routes/app_routes.dart';
+import 'package:mark_your_attendance/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
