@@ -62,7 +62,7 @@ class RegistrationView extends GetView<RegistrationController> {
                     controller: _phoneController,
                     decoration: const InputDecoration(
                       labelText: 'Phone Number',
-                      hintText: '+1234567890',
+                      hintText: '+91 9334567890',
                       border: OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.phone,

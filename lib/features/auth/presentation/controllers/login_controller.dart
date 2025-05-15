@@ -1,38 +1,67 @@
 import 'package:get/get.dart';
-import 'package:mark_your_attendance/features/auth/data/services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mark_your_attendance/core/routes/app_routes.dart';
+import 'package:mark_your_attendance/core/utils/phone_utils.dart';
 
 class LoginController extends GetxController {
-  final AuthService _authService;
-  
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   final _isLoading = false.obs;
   final _errorMessage = ''.obs;
-
-  LoginController(this._authService);
+  final _phoneNumber = ''.obs;
 
   bool get isLoading => _isLoading.value;
   String get errorMessage => _errorMessage.value;
+  String get phoneNumber => _phoneNumber.value;
 
-  Future<void> login(String phoneNumber, String password) async {
+  // Update phone number with formatting
+  void updatePhoneNumber(String value) {
+    _phoneNumber.value = PhoneUtils.formatForDisplay(value);
+  }
+
+  // Login with phone and password
+  Future<void> login(String phone, String password) async {
     try {
       _isLoading.value = true;
       _errorMessage.value = '';
 
-      // Validate phone number format
-      if (!_isValidPhoneNumber(phoneNumber)) {
-        throw 'Invalid phone number format';
+      // Validate phone number
+      final phoneError = PhoneUtils.validatePhoneNumber(phone);
+      if (phoneError != null) {
+        throw phoneError;
       }
 
-      // Validate password
-      if (password.length < 6) {
-        throw 'Password must be at least 6 characters';
+      // Format phone number
+      final formattedPhone = PhoneUtils.formatPhoneNumber(phone);
+
+      // Check if user exists
+      final userQuery = await _firestore
+          .collection('users')
+          .where('phoneNumber', isEqualTo: formattedPhone)
+          .limit(1)
+          .get();
+
+      if (userQuery.docs.isEmpty) {
+        throw 'No account found with this phone number';
       }
 
-      // Attempt login
-      await _authService.loginWithPhoneAndPassword(phoneNumber, password);
-      
-      // Navigate to home on success
-      Get.offAllNamed(AppRoutes.HOME);
+      final userData = userQuery.docs.first.data();
+      if (userData['password'] != password) {
+        throw 'Invalid password';
+      }
+
+      // Create custom token or use phone auth here
+      // For now, we'll use anonymous sign in
+      await _auth.signInAnonymously();
+
+      // Update last login time
+      await userQuery.docs.first.reference.update({
+        'lastLoginAt': FieldValue.serverTimestamp(),
+      });
+
+      Get.offAllNamed(AppRoutes.MAIN);
     } catch (e) {
       _errorMessage.value = e.toString();
     } finally {
@@ -40,14 +69,15 @@ class LoginController extends GetxController {
     }
   }
 
-  bool _isValidPhoneNumber(String phoneNumber) {
-    // Basic phone number validation
-    // You might want to use a more sophisticated validation in production
-    final phoneRegex = RegExp(r'^\+?[1-9]\d{1,14}$');
-    return phoneRegex.hasMatch(phoneNumber);
-  }
-
   void resetError() {
     _errorMessage.value = '';
+  }
+
+  void navigateToRegister() {
+    Get.toNamed(AppRoutes.REGISTER);
+  }
+
+  void navigateToForgotPassword() {
+    Get.toNamed(AppRoutes.FORGOT_PASSWORD);
   }
 } 
