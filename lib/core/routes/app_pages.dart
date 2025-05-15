@@ -8,6 +8,8 @@ import 'package:mark_your_attendance/features/navigation/presentation/views/main
 import 'package:mark_your_attendance/features/auth/presentation/bindings/registration_binding.dart';
 import 'package:mark_your_attendance/features/auth/presentation/views/registration_view.dart';
 import 'package:mark_your_attendance/features/auth/presentation/bindings/login_binding.dart';
+import 'package:mark_your_attendance/features/auth/presentation/bindings/password_reset_binding.dart';
+import 'package:mark_your_attendance/features/auth/presentation/views/password_reset_view.dart';
 
 class AppPages {
   static final routes = [
@@ -25,6 +27,11 @@ class AppPages {
       name: AppRoutes.REGISTER,
       page: () => RegistrationView(),
       binding: RegistrationBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.FORGOT_PASSWORD,
+      page: () => PasswordResetView(),
+      binding: PasswordResetBinding(),
     ),
     GetPage(
       name: AppRoutes.HOME,
