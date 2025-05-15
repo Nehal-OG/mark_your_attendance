@@ -10,6 +10,8 @@ import 'package:mark_your_attendance/features/auth/presentation/views/registrati
 import 'package:mark_your_attendance/features/auth/presentation/bindings/login_binding.dart';
 import 'package:mark_your_attendance/features/auth/presentation/bindings/password_reset_binding.dart';
 import 'package:mark_your_attendance/features/auth/presentation/views/password_reset_view.dart';
+import 'package:mark_your_attendance/features/home/presentation/bindings/home_binding.dart';
+import 'package:mark_your_attendance/features/home/presentation/views/home_view.dart';
 
 class AppPages {
   static final routes = [
@@ -35,6 +37,11 @@ class AppPages {
     ),
     GetPage(
       name: AppRoutes.HOME,
+      page: () => const HomeView(),
+      binding: HomeBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.MAIN,
       page: () => const MainNavigation(),
       binding: NavigationBinding(),
     ),
