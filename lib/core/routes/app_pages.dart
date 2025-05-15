@@ -7,6 +7,7 @@ import 'package:mark_your_attendance/features/navigation/presentation/bindings/n
 import 'package:mark_your_attendance/features/navigation/presentation/views/main_navigation.dart';
 import 'package:mark_your_attendance/features/auth/presentation/bindings/registration_binding.dart';
 import 'package:mark_your_attendance/features/auth/presentation/views/registration_view.dart';
+import 'package:mark_your_attendance/features/auth/presentation/bindings/login_binding.dart';
 
 class AppPages {
   static final routes = [
@@ -18,7 +19,7 @@ class AppPages {
     GetPage(
       name: AppRoutes.LOGIN,
       page: () => LoginView(),
-      // binding: LoginBinding(), // TODO: Add login binding
+      binding: LoginBinding(),
     ),
     GetPage(
       name: AppRoutes.REGISTER,
