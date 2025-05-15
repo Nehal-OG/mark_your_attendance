@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1080501875654",
+    "project_id": "mark-your-attendance-e2e43",
+    "storage_bucket": "mark-your-attendance-e2e43.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1080501875654:android:5910e27f2716f96c30f8c7",
+        "android_client_info": {
+          "package_name": "com.example.mark_your_attendance"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwcr4Sn1NgQKMvfJhk_nIXmx6GwDQoXaQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
