@@ -6,6 +6,6 @@ class RegistrationBinding extends Bindings {
   @override
   void dependencies() {
     Get.put(PhoneAuthService());
-    Get.put(RegistrationController(Get.find<PhoneAuthService>()));
+    Get.put(RegistrationController());
   }
 } 

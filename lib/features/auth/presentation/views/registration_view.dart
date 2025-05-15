@@ -21,7 +21,7 @@ class RegistrationView extends GetView<RegistrationController> {
         child: Form(
           key: _formKey,
           child: Obx(() {
-            if (controller.isLoading) {
+            if (controller.isLoading.value) {
               return const Center(child: CircularProgressIndicator());
             }
 
@@ -39,7 +39,7 @@ class RegistrationView extends GetView<RegistrationController> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              controller.verificationError,
+                              controller.verificationError.string,
                               style: const TextStyle(color: Colors.red),
                             ),
                           ),

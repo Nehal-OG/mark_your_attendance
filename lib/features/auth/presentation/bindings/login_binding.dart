@@ -6,6 +6,6 @@ class LoginBinding extends Bindings {
   @override
   void dependencies() {
     Get.put(AuthService());
-    Get.put(LoginController(Get.find<AuthService>()));
+    Get.put(LoginController());
   }
 } 

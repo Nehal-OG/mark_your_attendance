@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -30,7 +32,7 @@ class SplashController extends GetxController {
       // If last sign in was more than 30 days ago or doesn't exist, force logout
       if (lastSignInTime == null || 
           DateTime.now().difference(lastSignInTime).inDays > 30) {
-        print('Debug: Session expired - Last sign in: $lastSignInTime'); // Debug log
+        log('Debug: Session expired - Last sign in: $lastSignInTime'); // Debug log
         await _forceLogout();
         return;
       }
@@ -42,16 +44,16 @@ class SplashController extends GetxController {
           .get();
 
       if (!userDoc.exists) {
-        print('Debug: User document not found in Firestore'); // Debug log
+        log('Debug: User document not found in Firestore'); // Debug log
         await _forceLogout();
         return;
       }
 
       // All checks passed, proceed to main screen
-      print('Debug: Auto-login successful for user: ${currentUser.uid}'); // Debug log
+      log('Debug: Auto-login successful for user: ${currentUser.uid}'); // Debug log
       Get.offAllNamed(AppRoutes.MAIN);
     } catch (e) {
-      print('Debug: Error during auth check - $e'); // Debug log
+      log('Debug: Error during auth check - $e'); // Debug log
       await _forceLogout();
     }
   }
@@ -60,7 +62,7 @@ class SplashController extends GetxController {
     try {
       await _auth.signOut();
     } catch (e) {
-      print('Debug: Error during force logout - $e'); // Debug log
+      log('Debug: Error during force logout - $e'); // Debug log
     } finally {
       _navigateToLogin();
     }

@@ -3,6 +3,7 @@ abstract class AppRoutes {
   static const SPLASH = '/splash';
   static const LOGIN = '/login';
   static const REGISTER = '/register';
+  static const VERIFY_OTP = '/verify-otp';
   static const FORGOT_PASSWORD = '/forgot-password';
   
   // Main Navigation Routes

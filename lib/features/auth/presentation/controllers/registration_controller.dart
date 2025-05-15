@@ -8,25 +8,33 @@ class RegistrationController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  final _isLoading = false.obs;
-  final _errorMessage = ''.obs;
-  final _phoneNumber = ''.obs;
-  final _verificationId = ''.obs;
-
-  bool get isLoading => _isLoading.value;
-  String get errorMessage => _errorMessage.value;
-  String get phoneNumber => _phoneNumber.value;
-
-  // Update phone number with formatting
-  void updatePhoneNumber(String value) {
-    _phoneNumber.value = PhoneUtils.formatForDisplay(value);
+  // Step tracking
+  final RxInt currentStep = 0.obs;
+  
+  // Form data
+  final RxString phoneNumber = ''.obs;
+  final RxString name = ''.obs;
+  final RxString verificationId = ''.obs;
+  
+  // Loading and error states
+  final RxBool isLoading = false.obs;
+  final RxString verificationError = ''.obs;
+  
+  // Clear error message
+  void resetError() {
+    verificationError.value = '';
   }
 
-  // Register new user
-  Future<void> register(String name, String phone, String password) async {
+  // Update phone number with proper formatting
+  void updatePhoneNumber(String value) {
+    phoneNumber.value = PhoneUtils.formatForDisplay(value);
+  }
+
+  // Step 1: Send OTP
+  Future<void> sendOTP(String phone) async {
     try {
-      _isLoading.value = true;
-      _errorMessage.value = '';
+      isLoading.value = true;
+      verificationError.value = '';
 
       // Validate phone number
       final phoneError = PhoneUtils.validatePhoneNumber(phone);
@@ -34,7 +42,7 @@ class RegistrationController extends GetxController {
         throw phoneError;
       }
 
-      // Format phone number
+      // Format phone number to E.164
       final formattedPhone = PhoneUtils.formatPhoneNumber(phone);
 
       // Check if phone number already exists
@@ -48,81 +56,122 @@ class RegistrationController extends GetxController {
         throw 'Phone number already registered';
       }
 
-      // Send OTP
-      await _sendOTP(formattedPhone);
+      // Store formatted phone number
+      phoneNumber.value = formattedPhone;
 
-      // Store registration data temporarily
-      Get.toNamed(AppRoutes.VERIFY_OTP, arguments: {
-        'name': name,
-        'phoneNumber': formattedPhone,
-        'password': password,
-      });
-    } catch (e) {
-      _errorMessage.value = e.toString();
-    } finally {
-      _isLoading.value = false;
-    }
-  }
-
-  // Send OTP
-  Future<void> _sendOTP(String phoneNumber) async {
-    try {
       await _auth.verifyPhoneNumber(
-        phoneNumber: phoneNumber,
+        phoneNumber: formattedPhone,
+        timeout: const Duration(seconds: 60),
         verificationCompleted: (PhoneAuthCredential credential) async {
-          // Auto-verification if possible (Android only)
+          // Auto-verification (Android only)
+          try {
+            await _signInWithCredential(credential);
+            currentStep.value = 2; // Skip OTP step on auto-verification
+          } catch (e) {
+            verificationError.value = e.toString();
+          }
         },
         verificationFailed: (FirebaseAuthException e) {
-          throw e.message ?? 'Verification failed';
+          String errorMessage = 'Verification failed';
+          switch (e.code) {
+            case 'invalid-phone-number':
+              errorMessage = 'Invalid phone number format';
+              break;
+            case 'too-many-requests':
+              errorMessage = 'Too many attempts. Please try again later';
+              break;
+            default:
+              errorMessage = e.message ?? errorMessage;
+          }
+          throw errorMessage;
         },
-        codeSent: (String verificationId, int? resendToken) {
-          _verificationId.value = verificationId;
+        codeSent: (String verId, int? resendToken) {
+          verificationId.value = verId;
+          currentStep.value = 1; // Move to OTP step
+          Get.toNamed(AppRoutes.VERIFY_OTP);
         },
-        codeAutoRetrievalTimeout: (String verificationId) {
-          _verificationId.value = verificationId;
+        codeAutoRetrievalTimeout: (String verId) {
+          verificationId.value = verId;
         },
       );
     } catch (e) {
-      throw e.toString();
+      verificationError.value = e.toString();
+    } finally {
+      isLoading.value = false;
     }
   }
 
-  // Verify OTP and complete registration
-  Future<void> verifyOTP(String otp, Map<String, dynamic> userData) async {
+  // Step 2: Verify OTP
+  Future<void> verifyOTP(String otp) async {
     try {
-      _isLoading.value = true;
-      _errorMessage.value = '';
+      isLoading.value = true;
+      verificationError.value = '';
 
-      // Verify OTP
-      PhoneAuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: _verificationId.value,
+      if (otp.length != 6) {
+        throw 'Please enter a valid 6-digit OTP';
+      }
+
+      final credential = PhoneAuthProvider.credential(
+        verificationId: verificationId.value,
         smsCode: otp,
       );
 
-      // Sign in with credential
-      final userCredential = await _auth.signInWithCredential(credential);
-      final user = userCredential.user;
+      await _signInWithCredential(credential);
+      currentStep.value = 2; // Move to password step
+    } catch (e) {
+      if (e is FirebaseAuthException) {
+        verificationError.value = e.message ?? 'Verification failed';
+      } else {
+        verificationError.value = e.toString();
+      }
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
-      if (user == null) throw 'Registration failed';
+  // Step 3: Complete Registration
+  Future<void> completeRegistration(String password) async {
+    try {
+      isLoading.value = true;
+      verificationError.value = '';
+
+      if (password.length < 6) {
+        throw 'Password must be at least 6 characters';
+      }
+
+      final user = _auth.currentUser;
+      if (user == null) throw 'Authentication error';
 
       // Create user document in Firestore
       await _firestore.collection('users').doc(user.uid).set({
-        'name': userData['name'],
-        'phoneNumber': userData['phoneNumber'],
-        'password': userData['password'],
+        'phoneNumber': phoneNumber.value,
+        'name': name.value,
+        'password': password,
         'createdAt': FieldValue.serverTimestamp(),
         'lastLoginAt': FieldValue.serverTimestamp(),
       });
 
       Get.offAllNamed(AppRoutes.MAIN);
     } catch (e) {
-      _errorMessage.value = e.toString();
+      verificationError.value = e.toString();
     } finally {
-      _isLoading.value = false;
+      isLoading.value = false;
     }
   }
 
-  void resetError() {
-    _errorMessage.value = '';
+  // Helper method for signing in with credential
+  Future<void> _signInWithCredential(PhoneAuthCredential credential) async {
+    try {
+      await _auth.signInWithCredential(credential);
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'invalid-verification-code':
+          throw 'Invalid OTP code';
+        case 'invalid-verification-id':
+          throw 'Invalid verification session';
+        default:
+          throw e.message ?? 'Authentication failed';
+      }
+    }
   }
 } 

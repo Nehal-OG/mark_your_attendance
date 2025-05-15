@@ -10,6 +10,7 @@ import 'package:mark_your_attendance/features/auth/presentation/views/registrati
 import 'package:mark_your_attendance/features/auth/presentation/bindings/login_binding.dart';
 import 'package:mark_your_attendance/features/auth/presentation/bindings/password_reset_binding.dart';
 import 'package:mark_your_attendance/features/auth/presentation/views/password_reset_view.dart';
+import 'package:mark_your_attendance/features/auth/presentation/views/verify_otp_view.dart';
 
 // Main Navigation
 import 'package:mark_your_attendance/features/navigation/presentation/bindings/navigation_binding.dart';
@@ -45,6 +46,11 @@ class AppPages {
     GetPage(
       name: AppRoutes.REGISTER,
       page: () => RegistrationView(),
+      binding: RegistrationBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.VERIFY_OTP,
+      page: () => VerifyOTPView(),
       binding: RegistrationBinding(),
     ),
     GetPage(
