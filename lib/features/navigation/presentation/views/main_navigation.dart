@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mark_your_attendance/features/calendar/presentation/views/calendar_view.dart';
+import 'package:mark_your_attendance/features/home/presentation/views/home_view.dart';
+import 'package:mark_your_attendance/features/more/presentation/views/more_view.dart';
 import 'package:mark_your_attendance/features/navigation/presentation/controllers/navigation_controller.dart';
-import 'package:mark_your_attendance/features/navigation/presentation/views/calendar_view.dart';
-import 'package:mark_your_attendance/features/navigation/presentation/views/home_view.dart';
-import 'package:mark_your_attendance/features/navigation/presentation/views/more_view.dart';
+
 
 class MainNavigation extends GetView<NavigationController> {
   const MainNavigation({super.key});

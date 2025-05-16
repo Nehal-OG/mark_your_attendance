@@ -22,7 +22,6 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       initialBinding: InitialBinding(),
-
       debugShowCheckedModeBanner: false,
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
