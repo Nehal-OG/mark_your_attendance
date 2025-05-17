@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart';
+import '../utils/app_utils.dart';
 
 class AuthService extends GetxService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -22,6 +23,8 @@ class AuthService extends GetxService {
   }
 
   Future<void> sendOTP(String phoneNumber) async {
+    if (!await AppUtils.ensureInternetAccess()) return;
+
     try {
       isLoading.value = true;
       error.value = '';
@@ -49,6 +52,7 @@ class AuthService extends GetxService {
   }
 
   Future<bool> verifyOTP(String otp) async {
+    if (!await AppUtils.ensureInternetAccess()) return false;
     try {
       isLoading.value = true;
       error.value = '';
@@ -88,6 +92,7 @@ class AuthService extends GetxService {
   }
 
   Future<void> updatePhoneNumber(String newPhoneNumber, String otp) async {
+    if (!await AppUtils.ensureInternetAccess()) return;
     try {
       isLoading.value = true;
       error.value = '';
@@ -107,6 +112,8 @@ class AuthService extends GetxService {
   }
 
   Future<void> signOut() async {
+    if (!await AppUtils.ensureInternetAccess()) return;
+
     try {
       await _auth.signOut();
     } catch (e) {

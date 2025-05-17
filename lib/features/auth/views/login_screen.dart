@@ -46,7 +46,7 @@ class LoginScreen extends GetView<AuthController> {
           keyboardType: TextInputType.phone,
           decoration: const InputDecoration(
             labelText: 'Phone Number',
-            hintText: '+1234567890',
+            hintText: '+91 9334567890',
             border: OutlineInputBorder(),
           ),
         ),

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
+import '../utils/app_utils.dart';
 
 class AttendanceService extends GetxService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -19,6 +20,9 @@ class AttendanceService extends GetxService {
   final RxDouble currentLng = 0.0.obs;
 
   Future<void> checkIn() async {
+    if (!await AppUtils.ensureInternetAccess()) return;
+    if (!await AppUtils.ensureLocationAccess()) return;
+    
     try {
       isLoading.value = true;
       error.value = '';
@@ -52,6 +56,8 @@ class AttendanceService extends GetxService {
   }
 
   Future<void> checkOut() async {
+    if (!await AppUtils.ensureInternetAccess()) return;
+
     try {
       isLoading.value = true;
       error.value = '';
@@ -84,6 +90,8 @@ class AttendanceService extends GetxService {
   }
 
   Future<Map<DateTime, bool>> getMonthlyAttendance() async {
+    if (!await AppUtils.ensureInternetAccess()) return {};
+
     try {
       final Map<DateTime, bool> attendanceMap = {};
       final now = DateTime.now();
@@ -114,6 +122,8 @@ class AttendanceService extends GetxService {
   }
 
   Future<List<Map<String, dynamic>>> getAttendanceRecords() async {
+    if (!await AppUtils.ensureInternetAccess()) return [];
+
     try {
       final querySnapshot = await _firestore
           .collection('attendance')
@@ -137,6 +147,8 @@ class AttendanceService extends GetxService {
   }
 
   Future<void> loadTodayAttendance() async {
+    if (!await AppUtils.ensureInternetAccess()) return;
+
     try {
       final String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
       final doc = await _firestore
