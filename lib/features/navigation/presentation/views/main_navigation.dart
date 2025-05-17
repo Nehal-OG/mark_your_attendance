@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mark_your_attendance/features/calendar/presentation/views/calendar_view.dart';
-import 'package:mark_your_attendance/features/home/presentation/views/home_view.dart';
+import 'package:mark_your_attendance/features/home/views/home_screen.dart';
 import 'package:mark_your_attendance/features/more/presentation/views/more_view.dart';
 import 'package:mark_your_attendance/features/navigation/presentation/controllers/navigation_controller.dart';
 
@@ -15,7 +15,7 @@ class MainNavigation extends GetView<NavigationController> {
       body: Obx(() => IndexedStack(
             index: controller.selectedIndex,
             children: const [
-              HomeView(),
+              HomeScreen(),
               CalendarView(),
               MoreView(),
             ],

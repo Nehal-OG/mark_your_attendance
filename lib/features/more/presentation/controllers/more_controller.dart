@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:mark_your_attendance/core/routes/app_routes.dart';
+import 'package:mark_your_attendance/core/routes/app_pages.dart';
 import 'package:mark_your_attendance/features/attendance/data/models/attendance_model.dart';
 import 'package:mark_your_attendance/features/more/data/services/more_service.dart';
 
