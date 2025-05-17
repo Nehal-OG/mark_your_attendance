@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
@@ -7,7 +9,7 @@ import '../utils/app_utils.dart';
 class AuthService extends GetxService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  
+
   final Rx<User?> user = Rx<User?>(null);
   final RxString verificationId = ''.obs;
   final RxBool isLoading = false.obs;
@@ -28,7 +30,7 @@ class AuthService extends GetxService {
     try {
       isLoading.value = true;
       error.value = '';
-      
+
       await _auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         verificationCompleted: (PhoneAuthCredential credential) async {
@@ -53,6 +55,8 @@ class AuthService extends GetxService {
 
   Future<bool> verifyOTP(String otp) async {
     if (!await AppUtils.ensureInternetAccess()) return false;
+    if (!await AppUtils.ensureLocationAccess()) return false;
+
     try {
       isLoading.value = true;
       error.value = '';
@@ -63,7 +67,7 @@ class AuthService extends GetxService {
       );
 
       final userCredential = await _auth.signInWithCredential(credential);
-      
+
       if (userCredential.user != null) {
         await _saveUserLocation(userCredential.user!.phoneNumber!);
         return true;
@@ -79,15 +83,28 @@ class AuthService extends GetxService {
 
   Future<void> _saveUserLocation(String phoneNumber) async {
     try {
+      final uid = _auth.currentUser?.uid;
+      if (uid == null) return;
+
+      final docRef = _firestore.collection('users').doc(uid);
+      final docSnapshot = await docRef.get();
+
       final position = await Geolocator.getCurrentPosition();
-      
-      await _firestore.collection('users').doc(_auth.currentUser?.uid).set({
+
+      final data = {
         'phoneNumber': phoneNumber,
         'location': GeoPoint(position.latitude, position.longitude),
         'lastUpdated': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
+      };
+
+      if (!docSnapshot.exists) {
+        data['createdAt'] = FieldValue.serverTimestamp();
+        data['isActive'] = true;
+      }
+
+      await docRef.set(data, SetOptions(merge: true));
     } catch (e) {
-      print('Error saving user location: $e');
+      log('Error saving user location: $e');
     }
   }
 
@@ -124,4 +141,4 @@ class AuthService extends GetxService {
   bool isAuthenticated() {
     return _auth.currentUser != null;
   }
-} 
+}

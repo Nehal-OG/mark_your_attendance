@@ -48,7 +48,7 @@ class SignInScreen extends GetView<AuthController> {
           keyboardType: TextInputType.phone,
           decoration: const InputDecoration(
             labelText: 'Phone Number',
-            hintText: '+91 9334567890',
+            hintText: '9334567890',
             border: OutlineInputBorder(),
           ),
         ),

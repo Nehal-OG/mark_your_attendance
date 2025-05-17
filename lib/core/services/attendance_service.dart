@@ -22,7 +22,7 @@ class AttendanceService extends GetxService {
   Future<void> checkIn() async {
     if (!await AppUtils.ensureInternetAccess()) return;
     if (!await AppUtils.ensureLocationAccess()) return;
-    
+
     try {
       isLoading.value = true;
       error.value = '';
@@ -42,7 +42,7 @@ class AttendanceService extends GetxService {
         'checkInLocation': GeoPoint(position.latitude, position.longitude),
         'date': formattedDate,
         'status': 'Checked In',
-      });
+      }, SetOptions(merge: true));
 
       checkInTime.value = formattedTime;
       attendanceStatus.value = 'Checked In';
@@ -57,6 +57,7 @@ class AttendanceService extends GetxService {
 
   Future<void> checkOut() async {
     if (!await AppUtils.ensureInternetAccess()) return;
+    if (!await AppUtils.ensureLocationAccess()) return;
 
     try {
       isLoading.value = true;
@@ -64,15 +65,30 @@ class AttendanceService extends GetxService {
 
       final position = await Geolocator.getCurrentPosition();
       final now = DateTime.now();
-      final String formattedDate = DateFormat('yyyy-MM-dd').format(now);
-      final String formattedTime = DateFormat('HH:mm:ss').format(now);
+      final formattedDate = DateFormat('yyyy-MM-dd').format(now);
+      final formattedTime = DateFormat('HH:mm:ss').format(now);
 
-      await _firestore
+      final docRef = _firestore
           .collection('attendance')
           .doc(_auth.currentUser?.uid)
           .collection('records')
-          .doc(formattedDate)
-          .update({
+          .doc(formattedDate);
+
+      final docSnapshot = await docRef.get();
+
+      if (!docSnapshot.exists) {
+        error.value = 'You must check in first before checking out.';
+        return;
+      }
+
+      // Optional: Check if already checked out
+      final data = docSnapshot.data();
+      if (data != null && data.containsKey('checkOutTime')) {
+        error.value = 'You have already checked out for today.';
+        return;
+      }
+
+      await docRef.update({
         'checkOutTime': formattedTime,
         'checkOutLocation': GeoPoint(position.latitude, position.longitude),
         'status': 'Checked Out',
@@ -150,6 +166,11 @@ class AttendanceService extends GetxService {
     if (!await AppUtils.ensureInternetAccess()) return;
 
     try {
+      // Get current device location
+      final position = await Geolocator.getCurrentPosition();
+      currentLat.value = position.latitude;
+      currentLng.value = position.longitude;
+
       final String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
       final doc = await _firestore
           .collection('attendance')
@@ -163,13 +184,24 @@ class AttendanceService extends GetxService {
         checkInTime.value = data['checkInTime'] ?? '';
         checkOutTime.value = data['checkOutTime'] ?? '';
         attendanceStatus.value = data['status'] ?? '';
+
+        if (data['checkInLocation'] != null) {
+          GeoPoint location = data['checkInLocation'];
+          registeredLat.value = location.latitude;
+          registeredLng.value = location.longitude;
+        } else {
+          registeredLat.value = 0.0;
+          registeredLng.value = 0.0;
+        }
       } else {
         checkInTime.value = '';
         checkOutTime.value = '';
         attendanceStatus.value = '';
+        registeredLat.value = 0.0;
+        registeredLng.value = 0.0;
       }
     } catch (e) {
       error.value = e.toString();
     }
   }
-} 
+}
