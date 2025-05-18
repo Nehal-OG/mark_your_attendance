@@ -2,6 +2,10 @@
 
 A Flutter application for managing employee attendance using GetX state management and clean architecture.
 
+Step to create dynamic Icons
+<!-- Run below command to generate icon for web and other mode -->
+- flutter pub run flutter_launcher_icons
+
 ## Features
 
 - User Authentication (Login/Register)
