@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:mark_your_attendance/features/attendance/data/services/attendance_service.dart';
+import 'package:mark_your_attendance/core/services/attendance_service.dart';
 import 'package:mark_your_attendance/features/calendar/controllers/calendar_controller.dart';
 import 'package:mark_your_attendance/features/home/controllers/home_controller.dart';
 import 'package:mark_your_attendance/features/more/controllers/more_controller.dart';
