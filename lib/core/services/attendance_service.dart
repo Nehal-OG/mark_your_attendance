@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
@@ -28,10 +29,13 @@ class AttendanceService extends GetxService {
       error.value = '';
 
       final position = await Geolocator.getCurrentPosition();
+      log('📍 Current Location - Lat: ${position.latitude}, Lng: ${position.longitude}');
+
       final now = DateTime.now();
       final String formattedDate = DateFormat('yyyy-MM-dd').format(now);
       final String formattedTime = DateFormat('HH:mm:ss').format(now);
 
+      log('🕒 Writing check-in data to Firestore...');
       await _firestore
           .collection('attendance')
           .doc(_auth.currentUser?.uid)
@@ -43,6 +47,7 @@ class AttendanceService extends GetxService {
         'date': formattedDate,
         'status': 'Checked In',
       }, SetOptions(merge: true));
+      log('✅ Check-in data written successfully');
 
       checkInTime.value = formattedTime;
       attendanceStatus.value = 'Checked In';
@@ -50,6 +55,7 @@ class AttendanceService extends GetxService {
       currentLng.value = position.longitude;
     } catch (e) {
       error.value = e.toString();
+      log('❌ Error during check-in: $e');
     } finally {
       isLoading.value = false;
     }
@@ -170,6 +176,8 @@ class AttendanceService extends GetxService {
       final position = await Geolocator.getCurrentPosition();
       currentLat.value = position.latitude;
       currentLng.value = position.longitude;
+      log(
+          '📍 Current location (load): ${position.latitude}, ${position.longitude}');
 
       final String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
       final doc = await _firestore
@@ -181,6 +189,8 @@ class AttendanceService extends GetxService {
 
       if (doc.exists) {
         final data = doc.data() as Map<String, dynamic>;
+        log('📄 Attendance Data Found: $data');
+
         checkInTime.value = data['checkInTime'] ?? '';
         checkOutTime.value = data['checkOutTime'] ?? '';
         attendanceStatus.value = data['status'] ?? '';
@@ -194,6 +204,7 @@ class AttendanceService extends GetxService {
           registeredLng.value = 0.0;
         }
       } else {
+        log('ℹ️ No attendance record for today');
         checkInTime.value = '';
         checkOutTime.value = '';
         attendanceStatus.value = '';
@@ -202,6 +213,7 @@ class AttendanceService extends GetxService {
       }
     } catch (e) {
       error.value = e.toString();
+      log('❌ Error loading today\'s attendance: $e');
     }
   }
 }
