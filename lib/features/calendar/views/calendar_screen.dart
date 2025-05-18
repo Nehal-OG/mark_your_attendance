@@ -14,17 +14,22 @@ class CalendarScreen extends GetView<app.CalendarController> {
       ),
       body: Column(
         children: [
-          Obx(() => TableCalendar(
-                firstDay: DateTime.utc(2024, 1, 1),
-                lastDay: DateTime.utc(2024, 12, 31),
+          Obx(() {
+            if (controller.isLoading.value) {
+              return const Center(child: CircularProgressIndicator());
+            } else {
+            return TableCalendar(
+                firstDay: DateTime(2024, 1, 1),
+                lastDay: DateTime(2030, 12, 31),
                 focusedDay: controller.focusedDay.value,
                 calendarFormat: controller.calendarFormat.value,
-                selectedDayPredicate: (day) =>
-                    isSameDay(controller.selectedDay.value, day),
+                selectedDayPredicate: (day) => isSameDay(controller.selectedDay.value, day),
                 onDaySelected: controller.onDaySelected,
                 onFormatChanged: controller.onFormatChanged,
-                onPageChanged: (focusedDay) =>
-                    controller.focusedDay.value = focusedDay,
+                onPageChanged: (focusedDay) {
+                  controller.focusedDay.value =
+                      controller.clampDate(focusedDay);
+                },
                 calendarStyle: const CalendarStyle(
                   outsideDaysVisible: false,
                 ),
@@ -40,7 +45,9 @@ class CalendarScreen extends GetView<app.CalendarController> {
                     );
                   },
                 ),
-              )),
+              );
+            }
+          }),
           const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -74,4 +81,4 @@ class CalendarScreen extends GetView<app.CalendarController> {
       ],
     );
   }
-} 
+}
