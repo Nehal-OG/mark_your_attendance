@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
     final authService = Get.put(AuthService());
     
     if (authService.isAuthenticated()) {
-      Get.offAllNamed(AppRoutes.HOME);
+      Get.offAllNamed(AppRoutes.MAIN);
     } else {
       Get.offAllNamed(AppRoutes.LOGIN);
     }

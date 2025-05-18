@@ -64,7 +64,7 @@ class AuthController extends GetxController {
     try {
       final success = await _authService.verifyOTP(otpController.text);
       if (success) {
-        Get.offAllNamed(AppRoutes.HOME);
+        Get.offAllNamed(AppRoutes.MAIN);
         if (!isLogin) {
           Get.snackbar(
             'Success',

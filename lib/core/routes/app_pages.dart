@@ -1,4 +1,6 @@
 import 'package:get/get.dart';
+import 'package:mark_your_attendance/features/navigation/presentation/bindings/navigation_binding.dart';
+import 'package:mark_your_attendance/features/navigation/presentation/views/main_navigation.dart';
 import '../../features/auth/bindings/auth_binding.dart';
 import '../../features/auth/views/login_screen.dart';
 import '../../features/auth/views/signin_screen.dart';
@@ -29,6 +31,28 @@ class AppPages {
       name: AppRoutes.SIGNIN,
       page: () => const SignInScreen(),
       binding: AuthBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.MAIN,
+      page: () => const MainNavigation(),
+      binding: NavigationBinding(),
+      children: [
+        GetPage(
+          name: AppRoutes.HOME,
+          page: () => const HomeScreen(),
+          binding: HomeBinding(),
+        ),
+        GetPage(
+          name: AppRoutes.CALENDAR,
+          page: () => const CalendarScreen(),
+          binding: CalendarBinding(),
+        ),
+        GetPage(
+          name: AppRoutes.MORE,
+          page: () => const MoreScreen(),
+          binding: MoreBinding(),
+        ),
+      ],
     ),
     GetPage(
       name: AppRoutes.HOME,
