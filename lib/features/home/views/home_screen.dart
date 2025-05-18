@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mark_your_attendance/core/routes/app_pages.dart';
 import '../controllers/home_controller.dart';
 import 'package:intl/intl.dart';
 
@@ -14,11 +15,11 @@ class HomeScreen extends GetView<HomeController> {
         actions: [
           IconButton(
             icon: const Icon(Icons.calendar_month),
-            onPressed: () => Get.toNamed('/calendar'),
+            onPressed: () => Get.toNamed(AppRoutes.CALENDAR),
           ),
           IconButton(
             icon: const Icon(Icons.more_vert),
-            onPressed: () => Get.toNamed('/more'),
+            onPressed: () => Get.toNamed(AppRoutes.MORE),
           ),
         ],
       ),
@@ -37,14 +38,16 @@ class HomeScreen extends GetView<HomeController> {
             Obx(() => Text(
                   controller.userName.value,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold),
                 )),
             const SizedBox(height: 8),
             Obx(() => Text(
-  DateFormat('EEEE, MMMM d, yyyy\nhh:mm a').format(controller.currentTime.value),
-  textAlign: TextAlign.center,
-  style: const TextStyle(fontSize: 16),
-)),
+                  DateFormat('EEEE, MMMM d, yyyy\nhh:mm a')
+                      .format(controller.currentTime.value),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 16),
+                )),
             const SizedBox(height: 48),
             Obx(() {
               if (controller.attendanceStatus.value == 'Checked In') {
@@ -105,4 +108,4 @@ class HomeScreen extends GetView<HomeController> {
       ),
     );
   }
-} 
+}
